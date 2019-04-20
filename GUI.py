@@ -2,6 +2,92 @@
 from Tkinter import *
 import tkMessageBox
 import tkFileDialog
+from PIL import Image, ImageTk
+
+# favicon.ico path
+ico_path = "./img/favicon.ico"
+
+class AnimatedGIF(Label, object):
+    def __init__(self, master, path, forever=True):
+        self._master = master
+        self._loc = 0
+        self._forever = forever
+
+        self._is_running = False
+
+        im = Image.open(path)
+        self._frames = []
+        i = 0
+        try:
+            while True:
+                photoframe = ImageTk.PhotoImage(im.copy().convert('RGBA'))
+                self._frames.append(photoframe)
+
+                i += 1
+                im.seek(i)
+        except EOFError: pass
+        self._last_index = len(self._frames) - 1
+        try:
+            self._delay = im.info['duration']
+        except:
+            self._delay = 100
+        self._callback_id = None
+        super(AnimatedGIF, self).__init__(master, image=self._frames[0])
+
+    def start_animation(self, frame=None):
+        if self._is_running: return
+        if frame is not None:
+            self._loc = 0
+            self.configure(image=self._frames[frame])
+        self._master.after(self._delay, self._animate_GIF)
+        self._is_running = True
+
+    def stop_animation(self):
+        if not self._is_running: return
+        if self._callback_id is not None:
+            self.after_cancel(self._callback_id)
+            self._callback_id = None
+        self._is_running = False
+
+    def _animate_GIF(self):
+        self._loc += 1
+        self.configure(image=self._frames[self._loc])
+        if self._loc == self._last_index:
+            if self._forever:
+                self._loc = 0
+                self._callback_id = self._master.after(self._delay, self._animate_GIF)
+            else:
+                self._callback_id = None
+                self._is_running = False
+        else:
+            self._callback_id = self._master.after(self._delay, self._animate_GIF)
+
+    def pack(self, start_animation=True, **kwargs):
+        if start_animation:
+            self.start_animation()
+        super(AnimatedGIF, self).pack(**kwargs)
+
+    def grid(self, start_animation=True, **kwargs):
+        if start_animation:
+            self.start_animation()
+        super(AnimatedGIF, self).grid(**kwargs)
+
+    def place(self, start_animation=True, **kwargs):
+        if start_animation:
+            self.start_animation()
+        super(AnimatedGIF, self).place(**kwargs)
+
+    def pack_forget(self, **kwargs):
+        self.stop_animation()
+        super(AnimatedGIF, self).pack_forget(**kwargs)
+
+    def grid_forget(self, **kwargs):
+        self.stop_animation()
+        super(AnimatedGIF, self).grid_forget(**kwargs)
+
+    def place_forget(self, **kwargs):
+        self.stop_animation()
+        super(AnimatedGIF, self).place_forget(**kwargs)
 
 # registration page
 def register():
@@ -21,9 +107,11 @@ def register():
     global instruction
     registration = Toplevel(index)
     registration.title("Register")
-    registration.geometry("500x340")
+    registration.geometry("504x300")
     registration.resizable(0, 0)
-    registration.iconbitmap("py.ico")
+    registration.iconbitmap(ico_path)
+    l = AnimatedGIF(registration, "./img/Bg1.gif")
+    l.place(x=0,y=0)
 
     # Register button event - registration
     def register_user():
@@ -72,29 +160,29 @@ def register():
     string1 = " -- Create your own account now! -- Please input the neccessary information below."
     instruction = StringVar(registration)
     instruction.set(string1)
-    show = Label(registration, textvariable=instruction,font=("Arial", 15), bg="cyan", width="300", height="3")
+    show = Label(registration, textvariable=instruction,font=("Arial", 15), bg="cyan", width="300", height="1")
     show.pack()
     marquee(show)
 
     username_label = Label(registration, text="Username: ")
-    username_label.place(x=150,y=90)
+    username_label.place(x=153,y=70)
     username_entry = Entry(registration, textvariable=username)
-    username_entry.place(x=220,y=92)
+    username_entry.place(x=220,y=72)
 
     email_label = Label(registration, text="Email Address: ")
-    email_label.place(x=130,y=130)
+    email_label.place(x=132,y=110)
     email_entry = Entry(registration, textvariable=email)
-    email_entry.place(x=220,y=132)
+    email_entry.place(x=220,y=112)
 
     password_label = Label(registration, text="Password: ")
-    password_label.place(x=150,y=170)
+    password_label.place(x=156,y=150)
     password_entry = Entry(registration, textvariable=password, show='*')
-    password_entry.place(x=220,y=172)
+    password_entry.place(x=220,y=152)
 
     password_confirm_label = Label(registration, text="Confirm Password: ")
-    password_confirm_label.place(x=110,y=210)
+    password_confirm_label.place(x=109,y=190)
     password_confirm_entry = Entry(registration, textvariable=password_confirm, show='*')
-    password_confirm_entry.place(x=220,y=212)
+    password_confirm_entry.place(x=220,y=192)
 
     Button(registration, text="Register", width=10, height=1, bg="Gray", command = register_user).place(x=220,y=250)
 
@@ -103,11 +191,12 @@ def login_page():
     global login
     login = Toplevel(index)
     login.title("Login")
-    login.geometry("500x250")
+    login.geometry("504x300")
     login.resizable(0, 0)
-    login.iconbitmap("py.ico")
-    Label(login, text="Please enter your username and password.", bg="cyan", width="300", height="2", font=("Arial", 15)).pack()
-    Label(login, text="").pack()
+    login.iconbitmap(ico_path)
+    l = AnimatedGIF(login, "./img/Bg2.gif")
+    l.place(x=0,y=0)
+    Label(login, text="Please enter your username and password.", bg="cyan", width="300", height="1", font=("Arial", 15)).pack()
 
     # lgoin button event - login_verify
     def login_verify():
@@ -141,31 +230,34 @@ def login_page():
     global username_login_entry
     global password_login_entry
 
-    Label(login, text="Username : ").pack()
+    login_label = Label(login, text="Username : ")
+    login_label.place(x=150,y=110)
     username_login_entry = Entry(login, textvariable=username_verify)
-    username_login_entry.pack()
-    Label(login, text="").pack()
-    Label(login, text="Password : ").pack()
+    username_login_entry.place(x=220,y=112)
+    passwd_label = Label(login, text="Password : ")
+    passwd_label.place(x=153,y=150)
     password_login_entry = Entry(login, textvariable=password_verify, show= '*')
-    password_login_entry.pack()
-    Label(login, text="").pack()
-    Button(login, text="Login", width=10, height=1, command = login_verify).pack()
+    password_login_entry.place(x=220,y=152)
+
+    Button(login, text="Login", width=10, height=1, command = login_verify).place(x=220,y=200)
 
 # Go to main menu if login success
 def menu_page():
     global menu
     menu = Toplevel(index)
     menu.title("COMP3335 - Encrypted File System")
-    menu.geometry("500x300")
-    menu.iconbitmap("py.ico")
+    menu.geometry("504x300")
+    menu.iconbitmap(ico_path)
     menu.resizable(0, 0)
+    l = AnimatedGIF(menu, "./img/Bg3.gif")
+    l.place(x=0,y=0)
 
     def my_files_page():
         global my_files
         my_files = Toplevel(menu)
         my_files.title("My Files")
         my_files.geometry("500x350")
-        my_files.iconbitmap("py.ico")
+        my_files.iconbitmap(ico_path)
         my_files.resizable(0, 0)
 
         def upload():
@@ -198,7 +290,7 @@ def menu_page():
                 share_form = Toplevel(my_files)
                 share_form.title("Share via email")
                 share_form.geometry("300x230")
-                share_form.iconbitmap("py.ico")
+                share_form.iconbitmap(ico_path)
                 share_form.resizable(0, 0)
 
                 def send_email():
@@ -257,7 +349,7 @@ def menu_page():
         shared_files = Toplevel(menu)
         shared_files.title("Shared Files")
         shared_files.geometry("500x350")
-        shared_files.iconbitmap("py.ico")
+        shared_files.iconbitmap(ico_path)
         shared_files.resizable(0, 0)
 
         def get_shared_file_list():
@@ -294,7 +386,7 @@ def menu_page():
         setting = Toplevel(menu)
         setting.title("Setting")
         setting.geometry("500x350")
-        setting.iconbitmap("py.ico")
+        setting.iconbitmap(ico_path)
         setting.resizable(0, 0)
 
         def edit():
@@ -325,7 +417,7 @@ def menu_page():
                 uname_form = Toplevel(setting)
                 uname_form.geometry("300x120")
                 uname_form.title("Change Username")
-                uname_form.iconbitmap("py.ico")
+                uname_form.iconbitmap(ico_path)
                 uname_form.resizable(0, 0)
                 new_uname = StringVar()
                 Label(uname_form, text="Please enter a new Username:").pack()
@@ -337,7 +429,7 @@ def menu_page():
                 email_form = Toplevel(setting)
                 email_form.geometry("300x120")
                 email_form.title("Change Email")
-                email_form.iconbitmap("py.ico")
+                email_form.iconbitmap(ico_path)
                 email_form.resizable(0, 0)
                 new_email = StringVar()
                 Label(email_form, text="Please enter a new Email:").pack()
@@ -358,13 +450,10 @@ def menu_page():
         email_label = Label(setting,text="Email:",width="10", height="1")
         email_label.place(x=2,y=35)
 
-    Label(menu,text="Menu", bg="cyan", width="300", height="2", font=("Arial", 15)).pack()
-    Label(menu,text="").pack()
-    Button(menu,text="My files", height="2", width="30", command=my_files_page).pack()
-    Label(menu,text="").pack()
-    Button(menu,text="Shared with me", height="2", width="30", command=shared_files_page).pack()
-    Label(menu,text="").pack()
-    Button(menu,text="Setting", height="2", width="30", command=setting_page).pack()
+    Label(menu,text="Menu", bg="cyan", width="300", height="1", font=("Arial", 15)).pack()
+    Button(menu,text="My files", height="2", width="20", command=my_files_page).place(x=180,y=60)
+    Button(menu,text="Shared with me", height="2", width="20", command=shared_files_page).place(x=180,y=140)
+    Button(menu,text="Setting", height="2", width="20", command=setting_page).place(x=180,y=220)
 
 
 #Index page
@@ -384,19 +473,20 @@ def index_page():
     global string
     global welcome
     index = Tk()
-    index.resizable(0, 0)
-    index.geometry("500x250")
+    # index.resizable(0, 0)
+    index.geometry("504x300")
+    l = AnimatedGIF(index, "./img/Bg.gif")
+    l.place(x=0,y=0)
     string = "Welcome to COMP3335 -- Encrypted File System -- Please choose Login or Register -- "
     welcome = StringVar(index)
     welcome.set(string)
-    show = Label(index,textvariable=welcome, font=("Arial", 15),bg="cyan",height=3,width=300)
+    show = Label(index,textvariable=welcome,bg="cyan",font=("Arial", 15),height=1,width=300)
     show.pack()
     index.title("COMP3335 - Encrypted File System")
-    index.iconbitmap("py.ico")
-    Button(text="Login", height="2", width="30", command=login_page).place(x=135,y=90)
-    Button(text="Register",height="2", width="30", command=register).place(x=135,y=160)
+    index.iconbitmap(ico_path)
+    Button(text="Login", height="2", width="20", command=login_page).place(x=180,y=90)
+    Button(text="Register",height="2", width="20", command=register).place(x=180,y=160)
     marquee(show)
-    Label(index, text="©Käy_COMP3335").place(x=400,y=230)
 
     index.mainloop()
 
