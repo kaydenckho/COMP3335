@@ -21,18 +21,12 @@ def register():
     global instruction
     registration = Toplevel(index)
     registration.title("Register")
-    registration.geometry("500x300")
+    registration.geometry("500x340")
     registration.resizable(0, 0)
     registration.iconbitmap("py.ico")
 
     # Register button event - registration
     def register_user():
-        no_uname_label.pack_forget()
-        no_passwd_label.pack_forget()
-        no_confirm_label.pack_forget()
-        not_same_pw_label.pack_forget()
-        no_email_label.pack_forget()
-
         username_info = username.get()
         password_info = password.get()
         password_confirm_info = password_confirm.get()
@@ -52,30 +46,15 @@ def register():
             registration.destroy()
         else:
             if username_info == "":
-                Label(registration, text="").pack()
-                no_uname_label.pack()
-            elif password_info == "":
-                Label(registration, text="").pack()
-                no_passwd_label.pack()
-            elif password_confirm_info == "":
-                no_confirm_label.pack()
+                Label(registration, width=30,text="You must enter an username!", fg="red", font=("calibri", 11)).place(x=140,y=290)
             elif email_info =="":
-                no_email_label.pack()
+                Label(registration,width=30, text="You must enter an Email Address!", fg="red", font=("calibri", 11)).place(x=140,y=290)
+            elif password_info == "":
+                Label(registration,width=30, text="You must enter a password!", fg="red", font=("calibri", 11)).place(x=140,y=290)
+            elif password_confirm_info == "":
+                Label(registration,width=30, text="Please confirm your password!", fg="red", font=("calibri", 11)).place(x=140,y=290)
             else:
-                Label(registration, text="").pack()
-                not_same_pw_label.pack()
-
-    global no_uname_label
-    global no_passwd_label
-    global no_confirm_label
-    global not_same_pw_label
-    global no_email_label
-
-    no_email_label = Label(registration, text="You must enter an username!", fg="red", font=("calibri", 11))
-    no_uname_label = Label(registration, text="You must enter an username!", fg="red", font=("calibri", 11))
-    no_passwd_label = Label(registration, text="You must enter a password!", fg="red", font=("calibri", 11))
-    no_confirm_label = Label(registration, text="Please confirm your password!", fg="red", font=("calibri", 11))
-    not_same_pw_label = Label(registration, text="The two passwords are different!", fg="red", font=("calibri", 11))
+                Label(registration, width=30,text="The two passwords are different!", fg="red", font=("calibri", 11)).place(x=140,y=290)
 
     global username
     global password
@@ -118,12 +97,6 @@ def register():
     password_confirm_entry.place(x=220,y=212)
 
     Button(registration, text="Register", width=10, height=1, bg="Gray", command = register_user).place(x=220,y=250)
-    no_uname_label.pack_forget()
-    no_passwd_label.pack_forget()
-    no_confirm_label.pack_forget()
-    not_same_pw_label.pack_forget()
-    no_email_label.pack_forget()
-
 
 # Login page
 def login_page():
@@ -143,9 +116,9 @@ def login_page():
         username_login_entry.delete(0, END)
         password_login_entry.delete(0, END)
         if username == "":
-            tkMessageBox.showwarning("Warning","Please enter your username.", bg="red",font=("Calibri", 12))
+            tkMessageBox.showwarning("Warning","Please enter your username.")
         elif password == "":
-            tkMessageBox.showwarning("Warning","Please enter your password.", bg="red",font=("Calibri", 12))
+            tkMessageBox.showwarning("Warning","Please enter your password.")
         else:
             try:
                 with open(username, "r") as f:
@@ -157,7 +130,7 @@ def login_page():
                     else:
                         tkMessageBox.showwarning("Warning","Username or Password is incorrect.\nPlease try again.")
             except:
-                tkMessageBox.showwarning("Warning","Username or Password is incorrect.\nPlease try again.", bg="red",font=("Calibri", 12))
+                tkMessageBox.showwarning("Warning","Username or Password is incorrect.\nPlease try again.")
 
     global username_verify
     global password_verify
@@ -201,38 +174,88 @@ def menu_page():
             quote1 = filename.find('\'')
             quote2 = filename.find('\'',filename.find('\'')+1)
             filename = filename[quote1:quote2+1]
-            print filename
             lb.insert(END,filename)
             # TO BE WRITTEN...
 
         def delete():
-            filename = lb.get(lb.curselection())
+            try:
+                filename = lb.get(lb.curselection())
+            except:
+                tkMessageBox.showwarning("Warning","Please select a file.")
             lb.delete(lb.curselection())
             # TO BE WRITTEN...
 
-        def share():
-            filename = lb.get(lb.curselection())
+        def share_via_system():
+            try:
+                filename = lb.get(lb.curselection())
+            except:
+                tkMessageBox.showwarning("Warning","Please select a file.")
             # TO BE WRITTEN...
 
+        def share_via_email():
+            try:
+                filename = lb.get(lb.curselection())
+                share_form = Toplevel(my_files)
+                share_form.title("Share via email")
+                share_form.geometry("300x230")
+                share_form.iconbitmap("py.ico")
+                share_form.resizable(0, 0)
+
+                def send_email():
+                    uname = uname_receiver.get()
+                    email = Email_receiver.get()
+                    mail_server_passwd = mail_server_pw.get()
+                    print filename
+                    if uname != "" and email != "" and mail_server_passwd != "":
+                        share_form.destroy()
+                        # TO BE WRITTEN...
+                    else:
+                        tkMessageBox.showwarning("Warning","Please enter all the information required.")
+
+                uname_receiver = StringVar()
+                Email_receiver = StringVar()
+                mail_server_pw = StringVar()
+
+                Label(share_form, text="Username of receiver:").pack()
+                e1 = Entry(share_form,textvariable=uname_receiver).pack()
+                Label(share_form,text="").pack()
+                Label(share_form, text="Email address of receiver:").pack()
+                e2 = Entry(share_form,textvariable=Email_receiver).pack()
+                Label(share_form,text="").pack()
+                Label(share_form, text="Password of mail server:").pack()
+                e3 = Entry(share_form,textvariable=mail_server_pw).pack()
+                Label(share_form,text="").pack()
+                ok_btn = Button(share_form,text="OK", height="1", width="7", command=send_email).pack()
+            except:
+                tkMessageBox.showwarning("Warning","Please select a file.")
+
         def download():
-            filename = lb.get(lb.curselection())
+            try:
+                filename = lb.get(lb.curselection())
+            except:
+                tkMessageBox.showwarning("Warning","Please select a file.")
             # TO BE WRITTEN...
 
         lb=Listbox(my_files,width=56,height=20)
         lb.place(x=20,y=10)
+        # FOR DEMO ONLY
+        lb.insert(END,"25SCSKEN.jpg")
+        # FOR DEMO ONLY
         upload_btn = Button(my_files,text="Upload", height="2", width="15", command=upload)
         upload_btn.place(x=370,y=30)
         delete_btn = Button(my_files,text="Delete", height="2", width="15", command=delete)
         delete_btn.place(x=370,y=80)
-        share_btn = Button(my_files,text="Share", height="2", width="15", command=share)
-        share_btn.place(x=370,y=130)
+        share_btn1 = Button(my_files,text="Share via System", height="2", width="15", command=share_via_system)
+        share_btn1.place(x=370,y=130)
+        share_btn2 = Button(my_files,text="Share via Email", height="2", width="15", command=share_via_email)
+        share_btn2.place(x=370,y=180)
         download_btn = Button(my_files,text="Download", height="2", width="15", command=download)
-        download_btn.place(x=370,y=180)
+        download_btn.place(x=370,y=230)
 
     def shared_files_page():
         global shared_files
         shared_files = Toplevel(menu)
-        shared_files.title("My Files")
+        shared_files.title("Shared Files")
         shared_files.geometry("500x350")
         shared_files.iconbitmap("py.ico")
         shared_files.resizable(0, 0)
@@ -244,12 +267,18 @@ def menu_page():
             # for demo only
 
         def delete():
-            filename = lb.get(lb.curselection())
+            try:
+                filename = lb.get(lb.curselection())
+            except:
+                tkMessageBox.showwarning("Warning","Please select a file.")
             lb.delete(lb.curselection())
             # TO BE WRITTEN...
 
         def download():
-            filename = lb.get(lb.curselection())
+            try:
+                filename = lb.get(lb.curselection())
+            except:
+                tkMessageBox.showwarning("Warning","Please select a file.")
             # TO BE WRITTEN...
 
         lb=Listbox(shared_files,width=56,height=20)
@@ -277,7 +306,7 @@ def menu_page():
                     email_form.destroy()
                     # TO BE WRITTEN...
                 else:
-                    tkMessageBox.showwarning("Warning","Email should not be empty.", bg="red",font=("Calibri", 12))
+                    tkMessageBox.showwarning("Warning","Email should not be empty.")
 
             def change_uname():
                 cur_uname = new_uname.get()
@@ -287,7 +316,7 @@ def menu_page():
                     uname_form.destroy()
                     # TO BE WRITTEN...
                 else:
-                    tkMessageBox.showwarning("Warning","Username should not be empty.", bg="red",font=("Calibri", 12))
+                    tkMessageBox.showwarning("Warning","Username should not be empty.")
 
             choice = str(lb.curselection())
             quote = choice.find('\'')
@@ -303,7 +332,6 @@ def menu_page():
                 e1 = Entry(uname_form,textvariable=new_uname).pack()
                 Label(uname_form,text="").pack()
                 uname_btn = Button(uname_form,text="OK", height="1", width="7", command=change_uname).pack()
-                cur_uname = new_uname.get()
 
             if choice == 1:
                 email_form = Toplevel(setting)
