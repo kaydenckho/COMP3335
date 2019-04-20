@@ -1,4 +1,4 @@
-#import modules
+# -*- coding: utf-8 -*-
 from Tkinter import *
 import tkMessageBox
 import tkFileDialog
@@ -396,6 +396,7 @@ def index_page():
     Button(text="Login", height="2", width="30", command=login_page).place(x=135,y=90)
     Button(text="Register",height="2", width="30", command=register).place(x=135,y=160)
     marquee(show)
+    Label(index, text="©Käy_COMP3335").place(x=400,y=230)
 
     index.mainloop()
 
