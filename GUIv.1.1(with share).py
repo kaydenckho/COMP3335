@@ -272,13 +272,13 @@ def login_page():
                 global GCipherU # GLOBAL for aes encryption of user information (only use first 32 bits of Hash of (Password + Username))
 
 
-                GCipherU = AES.new(SU[:32])
+                GCipherU = AES.new(GSU[:32])
 
 
                 global GCipherF # GLOBAL for aes encryption of file information (only use first 32 bits of Hash of (Password + Username))
 
 
-                GCipherF = AES.new(SF[:32])
+                GCipherF = AES.new(GSF[:32])
 
 
                 global GUsername # GLOBAL Username
