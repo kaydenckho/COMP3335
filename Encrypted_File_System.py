@@ -41,7 +41,7 @@ def depadding (data):
 ###
 # database connection #
 global db
-db = MySQLdb.connect(host ='192.168.1.102', user ='admin', passwd = "admin", db = 'comp3335', charset ='utf8')
+db = MySQLdb.connect(host ='localhost', user ='root', passwd = "...", db = 'mysql', charset ='utf8')
 
 global cursor
 cursor = db.cursor()
@@ -796,6 +796,8 @@ def menu_page():
                 tkMessageBox.showwarning("Warning","You should not enter your username.")
             elif senderKey == "":
                 tkMessageBox.showwarning("Warning","Please enter the decryption key of the file.")
+            elif len(senderKey) != 40:
+                tkMessageBox.showwarning("Warning","Please enter a decryption key with valid length (40).")
             else:
                 global SCipherF
                 SCipherF = AES.new(senderKey[:32]) # for aes decryption of sender's file info used in shared_files_page
