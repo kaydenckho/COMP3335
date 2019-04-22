@@ -981,7 +981,7 @@ def index_page():
     Button(text="Login", height="2", width="20", command=login_page).place(x=180,y=90)
     Button(text="Register",height="2", width="20", command=register).place(x=180,y=160)
     marquee(show)
-    # winsound.PlaySound(bgm_path, winsound.SND_ASYNC | winsound.SND_LOOP)
+    winsound.PlaySound(bgm_path, winsound.SND_ASYNC | winsound.SND_LOOP)
     index.mainloop()
 
 index_page()
