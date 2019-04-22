@@ -837,7 +837,7 @@ def menu_page():
 
         global share_file_page_form
         share_file_page_form = Toplevel(menu)
-        share_file_page_form.geometry("300x150")
+        share_file_page_form.geometry("300x200")
         share_file_page_form.title("Shared with me")
         share_file_page_form.iconbitmap(ico_path)
         share_file_page_form.resizable(0, 0)
